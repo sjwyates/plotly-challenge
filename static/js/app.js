@@ -23,13 +23,14 @@ function createCharts(subjectID) {
             const subjectData = res.samples.find(sample => sample.id == subjectID);
             const subjectMeta = res.metadata.find(subject => subject.id == subjectID);
             // call create methods
-            createBarChart(subjectData, subjectID);
-            createBubbleChart(subjectData, subjectID);
+            createBarChart(subjectData);
+            createBubbleChart(subjectData);
+            addDemographicInfo(subjectMeta);
         })
         .catch(err => console.error(err))
 }
 
-function createBarChart(subjectData, subjectID) {
+function createBarChart(subjectData) {
     // extract top 10 values, otu ids, labels and do some fixing up
     const sampleValues = subjectData.sample_values.slice(0, 10).reverse();
     const otuIDs = subjectData.otu_ids.slice(0, 10).map(id => `OTU ${id}`).reverse();
@@ -45,13 +46,13 @@ function createBarChart(subjectData, subjectID) {
         }
     ]
     const layout = {
-        title: `Subject ${subjectID} top ${sampleValues.length} OTUs`,
+        title: `Subject ${subjectData.id} top ${sampleValues.length} OTUs`,
         xaxis: {title: 'Value'}
     }
     Plotly.react("bar", trace, layout);
 }
 
-function createBubbleChart(subjectData, subjectID) {
+function createBubbleChart(subjectData) {
     const trace = [
         {
             x: subjectData.otu_ids,
@@ -65,10 +66,17 @@ function createBubbleChart(subjectData, subjectID) {
         }
     ]
     const layout = {
-        title: `Subject ${subjectID} values`,
+        title: `Subject ${subjectData.id} values`,
         showlegend: false,
         xaxis: {title: 'OTU ID'},
         yaxis: {title: 'Value'}
     }
     Plotly.react("bubble", trace, layout);
+}
+
+function addDemographicInfo(subjectMeta) {
+    const div = d3.select('#sample-metadata');
+    for (const [key, value] of Object.entries(subjectMeta)) {
+        div.append('p').text(`${key}: ${value}`)
+    }
 }
