@@ -26,6 +26,7 @@ function createCharts(subjectID) {
             createBarChart(subjectData);
             createBubbleChart(subjectData);
             addDemographicInfo(subjectMeta);
+            createGaugeChart(subjectMeta);
         })
         .catch(err => console.error(err))
 }
