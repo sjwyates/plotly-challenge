@@ -22,18 +22,20 @@ function createCharts(subjectID) {
             // find subject data and metadata
             const subjectData = res.samples.find(sample => sample.id == subjectID);
             const subjectMeta = res.metadata.find(subject => subject.id == subjectID);
-            // extract top 10 values/otu ids/labels and do some fixing up
-            const sampleValues = subjectData.sample_values.slice(0, 10).reverse();
-            const otuIDs = subjectData.otu_ids.slice(0, 10).map(id => `OTU ${id}`).reverse();
-            const otuLabels = subjectData.otu_labels.slice(0, 10).map(label => label.split(';').join(', ')).reverse()
-            // create bar chart
-            createBarChart(sampleValues, otuIDs, otuLabels, subjectID);
+            // call create methods
+            createBarChart(subjectData, subjectID);
+            createBubbleChart(subjectData, subjectID);
         })
         .catch(err => console.error(err))
 }
 
-function createBarChart(sampleValues, otuIDs, otuLabels, subjectID) {
-    const barTrace = [
+function createBarChart(subjectData, subjectID) {
+    // extract top 10 values, otu ids, labels and do some fixing up
+    const sampleValues = subjectData.sample_values.slice(0, 10).reverse();
+    const otuIDs = subjectData.otu_ids.slice(0, 10).map(id => `OTU ${id}`).reverse();
+    const otuLabels = subjectData.otu_labels.slice(0, 10).map(label => label.split(';').join(', ')).reverse()
+    // create bar chart
+    const trace = [
         {
             x: sampleValues,
             y: otuIDs,
@@ -42,9 +44,31 @@ function createBarChart(sampleValues, otuIDs, otuLabels, subjectID) {
             orientation: 'h'
         }
     ]
-    const barLayout = {
+    const layout = {
         title: `Subject ${subjectID} top ${sampleValues.length} OTUs`,
         xaxis: {title: 'Value'}
     }
-    Plotly.react("bar", barTrace, barLayout);
+    Plotly.react("bar", trace, layout);
+}
+
+function createBubbleChart(subjectData, subjectID) {
+    const trace = [
+        {
+            x: subjectData.otu_ids,
+            y: subjectData.sample_values,
+            text: subjectData.otu_labels.map(label => label.split(';').join(', ')),
+            marker: {
+                size: subjectData.sample_values,
+                color: subjectData.otu_ids
+            },
+            mode: 'markers',
+        }
+    ]
+    const layout = {
+        title: `Subject ${subjectID} values`,
+        showlegend: false,
+        xaxis: {title: 'OTU ID'},
+        yaxis: {title: 'Value'}
+    }
+    Plotly.react("bubble", trace, layout);
 }
