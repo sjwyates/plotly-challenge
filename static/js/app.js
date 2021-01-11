@@ -8,33 +8,43 @@ window.addEventListener('DOMContentLoaded', () => {
                     .node()
                     .value = name
             })
-            createBarChart(dropdown.node().value);
+            createCharts(dropdown.node().value);
         })
 })
 
-function createBarChart(subjectID) {
+function optionChanged(subjectID) {
+    createCharts(subjectID);
+}
+
+function createCharts(subjectID) {
     d3.json('./data/samples.json')
         .then(res => {
+            // find subject data and metadata
             const subjectData = res.samples.find(sample => sample.id == subjectID);
             const subjectMeta = res.metadata.find(subject => subject.id == subjectID);
-            const data = [
-                {
-                    x: subjectData.sample_values.slice(0, 10).reverse(),
-                    y: subjectData.otu_ids.slice(0, 10).map(id => `OTU ${id}`).reverse(),
-                    text: subjectData.otu_labels.slice(0, 10).map(label => label.split(';').join(', ')).reverse(),
-                    type: 'bar',
-                    orientation: 'h'
-                }
-            ]
-            const layout = {
-                title: `Subject ${subjectID} top ${data[0].x.length} OTUs`,
-                xaxis: { title: 'Value' }
-            }
-            Plotly.react("bar", data, layout);
+            // extract top 10 values/otu ids/labels and do some fixing up
+            const sampleValues = subjectData.sample_values.slice(0, 10).reverse();
+            const otuIDs = subjectData.otu_ids.slice(0, 10).map(id => `OTU ${id}`).reverse();
+            const otuLabels = subjectData.otu_labels.slice(0, 10).map(label => label.split(';').join(', ')).reverse()
+            // create bar chart
+            createBarChart(sampleValues, otuIDs, otuLabels, subjectID);
         })
         .catch(err => console.error(err))
 }
 
-function optionChanged(subjectID) {
-    createBarChart(subjectID)
+function createBarChart(sampleValues, otuIDs, otuLabels, subjectID) {
+    const barTrace = [
+        {
+            x: sampleValues,
+            y: otuIDs,
+            text: otuLabels,
+            type: 'bar',
+            orientation: 'h'
+        }
+    ]
+    const barLayout = {
+        title: `Subject ${subjectID} top ${sampleValues.length} OTUs`,
+        xaxis: {title: 'Value'}
+    }
+    Plotly.react("bar", barTrace, barLayout);
 }
