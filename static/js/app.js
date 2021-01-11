@@ -76,6 +76,7 @@ function createBubbleChart(subjectData) {
 
 function addDemographicInfo(subjectMeta) {
     const div = d3.select('#sample-metadata');
+    div.selectAll('p').remove();
     for (const [key, value] of Object.entries(subjectMeta)) {
         div.append('p').text(`${key}: ${value}`)
     }
