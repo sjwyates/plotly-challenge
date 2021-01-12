@@ -1,6 +1,3 @@
-let subjectData = {};
-let subjectMeta = {};
-
 window.addEventListener('DOMContentLoaded', () => {
     d3.json('./data/samples.json')
         .then(res => {
@@ -23,18 +20,18 @@ function createCharts(subjectID) {
     d3.json('./data/samples.json')
         .then(res => {
             // find subject data and metadata
-            subjectData = res.samples.find(sample => sample.id == subjectID);
-            subjectMeta = res.metadata.find(subject => subject.id == subjectID);
+            const subjectData = res.samples.find(sample => sample.id == subjectID);
+            const subjectMeta = res.metadata.find(subject => subject.id == subjectID);
             // call create methods
-            createBarChart();
-            createBubbleChart();
-            addDemographicInfo();
-            createGaugeChart();
+            createBarChart(subjectData);
+            createBubbleChart(subjectData);
+            addDemographicInfo(subjectMeta);
+            createGaugeChart(subjectMeta);
         })
         .catch(err => console.error(err))
 }
 
-function createBarChart() {
+function createBarChart(subjectData) {
     // extract top 10 values, otu ids, labels and do some fixing up
     const sampleValues = subjectData.sample_values.slice(0, 10).reverse();
     const otuIDs = subjectData.otu_ids.slice(0, 10).map(id => `OTU ${id}`).reverse();
@@ -59,7 +56,7 @@ function createBarChart() {
     Plotly.react("bar", trace, layout);
 }
 
-function createBubbleChart() {
+function createBubbleChart(subjectData) {
     const trace = [
         {
             x: subjectData.otu_ids,
@@ -81,7 +78,7 @@ function createBubbleChart() {
     Plotly.react("bubble", trace, layout);
 }
 
-function addDemographicInfo() {
+function addDemographicInfo(subjectMeta) {
     const ul = d3.select('#sample-metadata');
     ul.selectAll('li').remove();
     ul.selectAll('li')
@@ -92,11 +89,10 @@ function addDemographicInfo() {
         .text(data => `${data[0]}: ${data[1]}`);
 }
 
-// ---------------------------------------
-// BONUS
-// ---------------------------------------
-function createGaugeChart() {
-    const level = 10;
+// ----------------------------------------------------------
+// BONUS - adapted from https://codepen.io/ascotto/pen/eGNaqe
+// ----------------------------------------------------------
+function createGaugeChart(subjectMeta) {
 
     function gaugePointer(value) {
 
@@ -112,9 +108,7 @@ function createGaugeChart() {
             pathY = String(y),
             pathEnd = ' Z';
         const path = mainPath.concat(pathX, space, pathY, pathEnd);
-
         return path;
-
     }
 
     const data = [
@@ -124,7 +118,7 @@ function createGaugeChart() {
             marker: {size: 18, color: '850000'},
             showlegend: false,
             name: 'wash frequency',
-            text: level,
+            text: 10,
             hoverinfo: 'text+name'
         },
         {

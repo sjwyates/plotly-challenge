@@ -22,7 +22,7 @@
     </div>
     <div class="row">
         <div class="col-md-4">
-            <div class="row g-3 align-items-center mb-5">
+            <div class="row g-3 align-items-center my-3">
                 <div class="col-auto">
                     <label for="selDataset" class="col-form-label h5">Test Subject ID:</label>
                 </div>
@@ -30,21 +30,17 @@
                     <select id="selDataset" class="form-select" onchange="optionChanged(this.value)"></select>
                 </div>
             </div>
-            <div>
-                <div class="panel-heading">
-                    <h3 class="panel-title">Demographic Info</h3>
-                </div>
-                <div class="panel-body">
-                    <ul id="sample-metadata" class="list-group"></ul>
-                </div>
+            <div class="my-3">
+                <h3 class="py-2">Demographic Info</h3>
+                <ul id="sample-metadata" class="list-group"></ul>
             </div>
         </div>
         <div class="col-md-8">
             <div id="gauge"></div>
         </div>
     <div>
-    <div id="bar"></div>
-    <div id="bubble"></div>
+    <div id="bar" class="my-3"></div>
+    <div id="bubble" class="my-3"></div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.5.0/d3.js"></script>
