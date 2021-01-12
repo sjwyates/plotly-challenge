@@ -37,7 +37,7 @@ function createBarChart(subjectData) {
     const otuIDs = subjectData.otu_ids.slice(0, 10).map(id => `OTU ${id}`).reverse();
     const otuLabels = subjectData.otu_labels.slice(0, 10).map(label => label.split(';').join(', ')).reverse()
     // create bar chart
-    const trace = [
+    const data = [
         {
             x: sampleValues,
             y: otuIDs,
@@ -53,11 +53,11 @@ function createBarChart(subjectData) {
         title: `Subject ${subjectData.id} top ${sampleValues.length} OTUs`,
         xaxis: {title: 'Value'}
     }
-    Plotly.react("bar", trace, layout);
+    Plotly.react("bar", data, layout);
 }
 
 function createBubbleChart(subjectData) {
-    const trace = [
+    const data = [
         {
             x: subjectData.otu_ids,
             y: subjectData.sample_values,
@@ -75,7 +75,7 @@ function createBubbleChart(subjectData) {
         xaxis: {title: 'OTU ID'},
         yaxis: {title: 'Value'}
     }
-    Plotly.react("bubble", trace, layout);
+    Plotly.react("bubble", data, layout);
 }
 
 function addDemographicInfo(subjectMeta) {
