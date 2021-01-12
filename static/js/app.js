@@ -1,13 +1,13 @@
-window.addEventListener('DOMContentLoaded', () => {
+d3.select(window).on('DOMContentLoaded', () => {
     d3.json('./data/samples.json')
         .then(res => {
             const dropdown = d3.select('#selDataset')
-            res.names.forEach(name => {
-                dropdown.append('option')
-                    .text(name)
-                    .node()
-                    .value = name
-            })
+            dropdown.selectAll('option')
+                .data(res.names)
+                .enter()
+                .append('option')
+                .text(d => d)
+                .attr('value', d => d);
             createCharts(dropdown.node().value);
         })
 })
